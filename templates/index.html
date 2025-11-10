@@ -21,7 +21,7 @@
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
       padding: 30px;
       width: 90%;
-      max-width: 500px;
+      max-width: 550px;
       text-align: center;
       transition: 0.3s ease;
     }
@@ -32,7 +32,7 @@
       letter-spacing: -1px;
       margin-right: 8px;
       vertical-align: middle;
-  }
+    }
     h2 {
       margin-bottom: 20px;
       color: #333;
@@ -53,8 +53,8 @@
       border-color: #6c63ff;
     }
     button {
-      margin-top: 15px;
-      background: #3b82f6;   /* bright blue */
+      margin-top: 10px;
+      background: #3b82f6;
       color: white;
       border: none;
       padding: 12px 25px;
@@ -62,6 +62,7 @@
       cursor: pointer;
       font-size: 15px;
       transition: 0.2s;
+      margin-right: 8px;
     }
     button:hover {
       background: #2563eb;
@@ -71,16 +72,32 @@
       font-size: 18px;
       color: #333;
     }
+    #languagesList {
+      margin-top: 20px;
+      text-align: left;
+      max-height: 200px;
+      overflow-y: auto;
+      background: #f9fafb;
+      border-radius: 10px;
+      padding: 15px;
+      border: 1px solid #ddd;
+      font-size: 14px;
+      color: #111827;
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <h2><span class="logo">അ</span> Language Detection Tool</h2>
+
     <textarea id="text" placeholder="Type or paste your text here..."></textarea><br>
     <button onclick="detectLanguage()">Detect Language</button>
     <button onclick="fetchInstance()">Get Instance ID</button>
+    <button onclick="fetchSupportedLanguages()">Show Supported Languages</button>
+
     <div class="result" id="result"></div>
     <p id="instanceResult" style="margin-top:10px; font-size:16px; color:#1e3a8a;"></p>
+    <div id="languagesList"></div>
   </div>
 
   <script>
@@ -111,21 +128,42 @@
         resultBox.innerHTML = " ⚠️ Could not connect to server.";
       }
     }
-  async function fetchInstance() {
-    const display = document.getElementById("instanceResult");
-    display.innerHTML = "Fetching instance ID...";
-    try {
-      const response = await fetch("/instance");
-      const data = await response.json();
-      if (data.instance_id) {
-        display.innerHTML = `🖥️ Instance ID: <strong>${data.instance_id}</strong>`;
-      } else {
-        display.innerHTML = `❌ Error: ${data.error}`;
+
+    async function fetchInstance() {
+      const display = document.getElementById("instanceResult");
+      display.innerHTML = "Fetching instance ID...";
+      try {
+        const response = await fetch("/instance");
+        const data = await response.json();
+        if (data.instance_id) {
+          display.innerHTML = `🖥️ Instance ID: <strong>${data.instance_id}</strong>`;
+        } else {
+          display.innerHTML = `❌ Error: ${data.error}`;
+        }
+      } catch (err) {
+        display.innerHTML = "❌ Could not fetch instance ID.";
       }
-    } catch (err) {
-      display.innerHTML = "❌ Could not fetch instance ID.";
     }
-  }
+
+    async function fetchSupportedLanguages() {
+      const container = document.getElementById("languagesList");
+      container.innerHTML = "Loading supported languages...";
+      try {
+        const response = await fetch("/supported_languages");
+        const data = await response.json();
+        const langs = data.supported_languages;
+        if (langs) {
+          const items = Object.entries(langs)
+            .map(([code, name]) => `<li><strong>${code}</strong> — ${name}</li>`)
+            .join("");
+          container.innerHTML = `<h4>🌐 Supported Languages (${data.count})</h4><ul>${items}</ul>`;
+        } else {
+          container.innerHTML = "⚠️ Could not fetch languages.";
+        }
+      } catch (err) {
+        container.innerHTML = "⚠️ Failed to load languages.";
+      }
+    }
   </script>
 </body>
 </html>
