@@ -2,7 +2,7 @@ import os
 from flask import Flask, request, jsonify, render_template
 from langdetect import detect_langs, DetectorFactory
 from flask_cors import CORS
-from utils import get_language_name
+from utils import LANGUAGE_MAP, get_language_name
 
 #Introducing randomness control for consistent language detection results
 DetectorFactory.seed = 0
@@ -14,6 +14,22 @@ CORS(app)
 @app.route('/')
 def home():
     return render_template('index.html')
+
+# Simple health check endpoint
+@app.route('/health', methods=['GET'])
+def health_check():
+    try:
+        get_language_name("en") # Simple operation to verify functionality
+        return jsonify({
+            "status": "OK",
+            "message": "Language Detection API is up and running!"
+        }), 200
+    except Exception as e:
+        return jsonify({
+            "status": "ERROR",
+            "message": f"Health check failed: {str(e)}"
+        }), 500
+
 
 # Route to get the instance ID
 @app.route('/instance', methods=['GET'])
@@ -44,6 +60,19 @@ def detect_language():
         })
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+# Route to get supported languages  
+@app.route('/supported_languages', methods=['GET'])
+def supported_languages():
+    try:
+        return jsonify({
+            "supported_languages": LANGUAGE_MAP,
+            "count": len(LANGUAGE_MAP)
+        }), 200
+    except Exception as e:
+        return jsonify({
+            "error": f"Unable to load supported languages: {str(e)}"
+        }), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
