@@ -74,5 +74,7 @@ def supported_languages():
             "error": f"Unable to load supported languages: {str(e)}"
         }), 500
 
+
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    #app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000) # For EC2 use
