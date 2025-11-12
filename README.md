@@ -27,8 +27,8 @@ It includes endpoints for language detection, supported language listings, EC2 i
 ## Setup (This can be used to replicate in an EC2 Instance as well)
 
 ```bash
-git clone https://github.com/sharathandres51-eng/sharath-study-tour-api.git
-cd sharath-study-tour-api
+git clone git clone https://github.com/sharathandres51-eng/sharath-langdetect-flask.git
+cd sharath-langdetect-flask
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
